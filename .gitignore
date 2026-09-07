@@ -1,0 +1,101 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE specific
+.pylintrc
+.mypy_cache/
+
+# Misc
+.cache/
+.tmp/
+
+# Data Files
+audio_outputs/
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql
+*.csv
+*.bak
+*.backup
+*.lock
+
+# User Data & Sessions
+data/
+uploads/
+sessions/
+user_data/
+temp_data/
+cache/
+
+# Local Development Data
+local_data/
+test_data/
+*.json.bak

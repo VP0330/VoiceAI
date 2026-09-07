@@ -1,29 +1,24 @@
-# Voice-to-Insight Backend — Phase 1 & Phase 2 Setup
+# 🎙️ VoiceAI Backend
 
-## Architecture Overview
+FastAPI-based backend for voice interview analysis with Ollama LLM integration and PostgreSQL persistence.
 
-**Phase 1 (✅ Complete):** REST API for structured analysis
-- ✅ `/api/analyze` — Submit transcript → get structured insights
-- ✅ PostgreSQL database with connection pooling
-- ✅ Ollama LLM integration with retry logic
+## 📦 Technology Stack
 
-**Phase 2 (🔄 In Development):** Full voice loop with real-time streaming
-- 🔄 `/api/voice/process` — Voice input → transcript → analysis → voice response
-- 🔄 WebSocket `/ws/session/{session_id}` — Real-time transcript streaming
-- 🔄 Deepgram STT (speech-to-text)
-- 🔄 ElevenLabs TTS (text-to-speech)
-- 🔄 Pipecat voice agent framework
-
----
+- **Framework**: FastAPI 0.104+
+- **Server**: Uvicorn
+- **Language**: Python 3.13
+- **Database**: PostgreSQL 16
+- **LLM**: Ollama (qwen2.5:3b-instruct)
+- **STT**: Deepgram API
+- **Real-time**: WebSocket
+- **Audio**: pyttsx3 (TTS)
 
 ## Prerequisites
 
 1. **Python 3.13** installed
 2. **Docker** installed (for PostgreSQL container)
 3. **Ollama** installed with `qwen2.5:3b-instruct` model
-4. **API Keys (for Phase 2):**
-   - Deepgram API key (free tier: https://deepgram.com)
-   - ElevenLabs API key (free tier: https://elevenlabs.io)
+4. **Deepgram API Key** (free tier available)
 
 ---
 

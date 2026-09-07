@@ -5,9 +5,15 @@ Orchestrates real-time transcription, LLM-based analysis, and insights extractio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-from db.schema import init_db
+import os
+from dotenv import load_dotenv
+from db.schema import init_db, init_connection_pool
 from api.analysis import router as analysis_router
 from api.websocket import router as websocket_router
+from api.voice import router as voice_router
+
+# Load environment variables
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(
@@ -35,11 +41,15 @@ app.add_middleware(
 # Initialize database on startup
 @app.on_event("startup")
 async def startup_event():
-    logger.info("Initializing database...")
+    logger.info("Initializing PostgreSQL connection pool...")
+    init_connection_pool()
+    logger.info("Connection pool initialized")
+    
+    logger.info("Initializing database schema...")
     init_db()
-    logger.info("Database ready")
+    logger.info("Database schema ready")
     logger.info("FastAPI app started")
-    logger.info("Endpoints: POST /api/analyze, WS /ws/session/{session_id}")
+    logger.info("Endpoints: POST /api/analyze, POST /api/voice/process, WS /ws/session/{session_id}")
 
 
 @app.on_event("shutdown")
@@ -50,6 +60,7 @@ async def shutdown_event():
 # Include routers
 app.include_router(analysis_router)
 app.include_router(websocket_router)
+app.include_router(voice_router)
 
 
 # Health check endpoint

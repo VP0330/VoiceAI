@@ -3,11 +3,13 @@ Ollama client with retry logic for structured output, latency tracking, and toke
 """
 import json
 import time
-import uuid
+import logging
 from typing import Optional
 from pydantic import BaseModel, ValidationError
 import requests
 from analysis.schemas import Insight
+
+logger = logging.getLogger(__name__)
 
 
 class OllamaClient:
@@ -20,7 +22,7 @@ class OllamaClient:
         self.base_url = base_url
         self.model_name = model_name
         self.max_retries = 3
-        self.timeout = 30
+        self.timeout = 10000
 
     def extract_insights(self, transcript: str) -> tuple[list[Insight], dict]:
         """
@@ -95,29 +97,29 @@ Return ONLY valid JSON array with no markdown, no code blocks, no extra text."""
                     "success": True
                 }
                 
-                print(f"[Ollama] Extraction succeeded after {retry_count} retries in {latency_ms}ms")
-                print(f"[Ollama] Tokens: {prompt_tokens} in, {completion_tokens} out")
+                logger.info(f"[Ollama] Extraction succeeded after {retry_count} retries in {latency_ms}ms")
+                logger.info(f"[Ollama] Tokens: {prompt_tokens} in, {completion_tokens} out")
                 
                 return insights, metadata
                 
             except (json.JSONDecodeError, ValueError, ValidationError) as e:
                 last_error = e
-                print(f"[Ollama] Attempt {attempt + 1}/{self.max_retries + 1} failed: {type(e).__name__}: {str(e)[:100]}")
+                logger.warning(f"[Ollama] Attempt {attempt + 1}/{self.max_retries + 1} failed: {type(e).__name__}: {str(e)[:100]}")
                 
                 if attempt < self.max_retries:
                     # Exponential backoff
                     backoff = 0.5 * (2 ** attempt)
-                    print(f"[Ollama] Retrying in {backoff:.1f}s...")
+                    logger.info(f"[Ollama] Retrying in {backoff:.1f}s...")
                     time.sleep(backoff)
             
             except requests.RequestException as e:
-                print(f"[Ollama] Network error on attempt {attempt + 1}: {str(e)[:100]}")
+                logger.error(f"[Ollama] Network error on attempt {attempt + 1}: {str(e)[:100]}")
                 raise Exception(f"Ollama unreachable: {str(e)}")
         
         # All retries failed
         latency_ms = int((time.time() - start_time) * 1000)
-        print(f"[Ollama] All {self.max_retries + 1} attempts failed after {latency_ms}ms")
-        print(f"[Ollama] Last error: {type(last_error).__name__}: {str(last_error)}")
+        logger.error(f"[Ollama] All {self.max_retries + 1} attempts failed after {latency_ms}ms")
+        logger.error(f"[Ollama] Last error: {type(last_error).__name__}: {str(last_error)}")
         
         raise Exception(f"Failed to extract insights after {self.max_retries + 1} attempts: {str(last_error)}")
 
@@ -152,7 +154,7 @@ Return ONLY valid JSON array with no markdown, no code blocks, no extra text."""
             # Log token counts if available
             if "usage" in data:
                 usage = data["usage"]
-                print(f"[Ollama Token Count] Prompt: {usage.get('prompt_tokens', 0)}, Completion: {usage.get('completion_tokens', 0)}")
+                logger.debug(f"[Ollama Token Count] Prompt: {usage.get('prompt_tokens', 0)}, Completion: {usage.get('completion_tokens', 0)}")
             
             return text
         else:

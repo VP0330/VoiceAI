@@ -2,6 +2,7 @@
 FastAPI endpoint for transcript analysis.
 """
 import uuid
+import json
 from datetime import datetime
 from fastapi import APIRouter, HTTPException
 from analysis.schemas import AnalysisRequest, AnalysisResponse, LLMCallMetadata, Insight
@@ -44,9 +45,9 @@ async def analyze_transcript(request: AnalysisRequest):
         
         # Prepare insight objects for DB storage
         insights_for_db = []
-        for i, insight in enumerate(insights):
+        for insight in insights:
             insights_for_db.append({
-                "id": f"{session_id}-insight-{i}",
+                "id": str(uuid.uuid4()),
                 "theme": insight.theme,
                 "quote": insight.quote,
                 "sentiment": insight.sentiment,
@@ -63,7 +64,7 @@ async def analyze_transcript(request: AnalysisRequest):
             session_id=session_id,
             llm_call_id=llm_call_id,
             prompt=f"System: Extract insights from transcript.\nUser: {request.transcript[:500]}...",  # Truncate for logging
-            response=str([i.dict() for i in insights]),  # Log structured response
+            response=json.dumps([i.model_dump() for i in insights]),  # Log structured response
             latency_ms=metadata["latency_ms"],
             retry_count=metadata["retry_count"],
             input_tokens=metadata["input_tokens"],
@@ -95,7 +96,7 @@ async def analyze_transcript(request: AnalysisRequest):
                 output_tokens=0,
                 success=False
             )
-        except:
+        except Exception:
             pass  # Best effort; don't obscure original error
         
         raise HTTPException(status_code=400, detail=f"Analysis failed: {str(e)}")

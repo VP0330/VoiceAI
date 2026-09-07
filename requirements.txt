@@ -1,0 +1,11 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+pydantic==2.8.2
+requests==2.32.0
+python-dotenv==1.0.1
+psycopg2-binary==2.9.10
+python-multipart==0.0.32
+# Phase 2: Voice agent libraries (Deepgram STT, pyttsx3 local TTS)
+deepgram-sdk==3.4.0
+pyttsx3==2.90
+pipecat-ai==0.0.42

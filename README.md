@@ -107,7 +107,7 @@ npm run dev
 ## 📂 Project Structure
 
 ```
-Arbor/
+VOiceAI/
 ├── backend/              # FastAPI backend
 │   ├── main.py
 │   ├── requirements.txt
